@@ -3,15 +3,16 @@
 ## 🏗️ Architecture Overview
 The project is divided into a robust backend and a modern frontend:
 
-* **Backend:** Built with Python and FastAPI. It exposes the chat API endpoint and uses a high-speed, deterministic Regex-based NLP state machine to drive the chatbot's reasoning. It also houses the Machine Learning pipeline.
-* **Frontend:** A React + Vite single-page application. It provides a sleek, responsive, light-mode chat interface (matching the Credang theme) for users to interact with the bot.
-* **Machine Learning:** A Random Forest model built with Scikit-Learn. It is trained on 60 days of synthetic clinic visit data (generated based on the provided sample data) to predict if the clinic will be `Free`, `Normal`, or `Busy`.
+* **Backend:** Built with Python and FastAPI. It exposes the chat API endpoint and utilizes the **Google Gemini LLM** via the Generative AI SDK to manage the conversation state naturally. It also houses the Machine Learning pipeline.
+* **Frontend:** A React + Vite single-page application. It provides a sleek, responsive chat interface with SSE (Server-Sent Events) streaming.
+* **Machine Learning:** A Random Forest model built with Scikit-Learn to predict clinic busyness based on time, day, and session.
 
-## 🤖 How the NLP State Machine and ML Model Interact
-1. When a patient requests a "walk-in" visit, the state machine naturally converses to find out what time they plan to arrive.
-2. The state machine parses the requested date and time using regex and calls the `predict_busyness` function.
-3. The function formats the requested date and time into features (Hour, Day of Week, Morning/Evening Session) and runs an inference using our pre-trained Random Forest model.
-4. The ML model returns the predicted busyness state (`Free`, `Normal`, or `Busy`) to the state machine, which formulates the final response.
+## 🤖 How the LLM and ML Model Interact
+1. When a patient requests a "walk-in" visit or a "fixed appointment", the Gemini LLM gathers the required details in a natural, conversational way.
+2. The LLM is equipped with **Function Calling (Tools)** for two primary actions: `predict_busyness` and `book_fixed_appointment`.
+3. If a walk-in is requested, the LLM calls `predict_busyness` with the parsed date and hour. The Python backend evaluates the ML model and returns the prediction (Busy/Normal/Free) to the LLM.
+4. The LLM reads the ML prediction and formulates the final response (e.g. suggesting quieter times if it's "Busy").
+
 
 ## 🚀 How to Run It
 
