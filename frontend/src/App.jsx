@@ -1,18 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import './App.css';
-// Session ID generated using Math.random
-// Let's use a simple random string for session id if uuid is not installed
 
+// Generate a unique session ID per browser tab
 const sessionId = Math.random().toString(36).substring(2, 15);
 
 function App() {
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hello! Welcome to the Clinic. How can I help you today?", sender: 'bot' }
-  ]);
+  const [messages, setMessages] = useState([]); // Fix #1: no hardcoded greeting — backend owns it
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const hasGreeted = useRef(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -22,52 +20,55 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+  // Fix #1: Auto-send "hi" on load so the backend state machine handles the greeting
+  useEffect(() => {
+    if (!hasGreeted.current) {
+      hasGreeted.current = true;
+      sendMessage('hi');
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const userMessage = { id: Date.now(), text: input, sender: 'user' };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
+  const sendMessage = async (text) => {
+    if (!text.trim() || isLoading) return;
+
+    // Only show user bubble for real user-typed messages (not the auto "hi")
+    const isAutoGreet = text === 'hi' && messages.length === 0;
+    if (!isAutoGreet) {
+      const userMessage = { id: Date.now(), text, sender: 'user' };
+      setMessages(prev => [...prev, userMessage]);
+    }
+
     setIsLoading(true);
-
     const botMessageId = Date.now() + 1;
 
     try {
       const response = await fetch('http://localhost:8000/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          session_id: sessionId,
-          message: userMessage.text
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sessionId, message: text }),
       });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+      if (!response.ok) throw new Error('Network response was not ok');
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder('utf-8');
       let buffer = '';
       let isFirstChunk = true;
-      
+
       while (true) {
         const { value, done } = await reader.read();
         if (done) {
           setIsLoading(false);
           break;
         }
-        
+
         buffer += decoder.decode(value, { stream: true });
-        
+
         let newlineIndex;
         while ((newlineIndex = buffer.indexOf('\n\n')) >= 0) {
           const message = buffer.slice(0, newlineIndex);
           buffer = buffer.slice(newlineIndex + 2);
-          
+
           if (message.startsWith('data: ')) {
             try {
               const data = JSON.parse(message.slice(6));
@@ -77,27 +78,40 @@ function App() {
                   setMessages(prev => [...prev, { id: botMessageId, text: data.content, sender: 'bot' }]);
                   isFirstChunk = false;
                 } else {
-                  setMessages(prev => prev.map(msg => 
-                    msg.id === botMessageId ? { ...msg, text: msg.text + data.content } : msg
-                  ));
+                  setMessages(prev =>
+                    prev.map(msg =>
+                      msg.id === botMessageId
+                        ? { ...msg, text: msg.text + data.content }
+                        : msg
+                    )
+                  );
                 }
               }
             } catch (err) {
-              console.error("Error parsing stream JSON", err);
+              console.error('Error parsing stream JSON', err);
             }
           }
         }
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      const errorMessage = { 
-        id: Date.now() + 2, 
-        text: "We're currently experiencing some technical difficulties. Please try again in a few minutes, or call the clinic directly for assistance.", 
-        sender: 'bot' 
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now() + 2,
+          text: "We're currently experiencing some technical difficulties. Please try again in a few minutes, or call the clinic directly for assistance.",
+          sender: 'bot',
+        },
+      ]);
       setIsLoading(false);
     }
+  };
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+    const text = input.trim();
+    setInput('');
+    await sendMessage(text);
   };
 
   return (
@@ -106,7 +120,7 @@ function App() {
         <div className="chat-header">
           <h1>Clinic Assistant</h1>
         </div>
-        
+
         <div className="chat-messages">
           {messages.map((msg) => (
             <div key={msg.id} className={`message-wrapper ${msg.sender}`}>
@@ -115,7 +129,7 @@ function App() {
               </div>
             </div>
           ))}
-          
+
           {isLoading && (
             <div className="message-wrapper bot">
               <div className="typing-indicator">
@@ -127,7 +141,7 @@ function App() {
           )}
           <div ref={messagesEndRef} />
         </div>
-        
+
         <form className="chat-input-area" onSubmit={handleSend}>
           <textarea
             value={input}
