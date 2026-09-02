@@ -13,6 +13,7 @@ yarn-error.log*
 __pycache__/
 *.py[cod]
 *$py.class
+data/chat_logs.txt
 venv/
 env/
 .env
@@ -30,3 +31,4 @@ env/
 # (Optional) Uncomment below if you don't want to track the generated model
 # backend/model.pkl
 # backend/data/synthetic_visits.csv
+backend/data/chat_logs.txt
