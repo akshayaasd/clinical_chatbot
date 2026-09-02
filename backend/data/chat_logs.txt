@@ -1,0 +1,148 @@
+[2026-09-02 21:19:21] [Session: s1zzg0zrk8] User: hi
+[2026-09-02 21:19:21] [Session: s1zzg0zrk8] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 21:19:39] [Session: s1zzg0zrk8] User: fixed appointment
+[2026-09-02 21:20:04] [Session: tjyt9rkxkbe] User: hii
+[2026-09-02 21:21:56] [Session: 1db1ty5jith] User: hi
+[2026-09-02 21:21:56] [Session: 1db1ty5jith] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 21:22:03] [Session: 1db1ty5jith] User: fixed appointment
+[2026-09-02 21:22:19] [Session: 1db1ty5jith] Bot: Hello! I would be happy to help you schedule a fixed appointment.   Could you please provide: 1. Your preferred date and time 2. Your full name 3. Your email address  Once I have these details, I will confirm your booking!
+[2026-09-02 21:22:44] [Session: 1db1ty5jith] User: tomorrow 10 am
+[2026-09-02 21:25:12] [Session: 1db1ty5jith] Bot: Thank you! I have noted your preferred date and time: **Thursday, September 3, 2026, at 10:00 AM**.  To complete your reservation, could you please share: 1. Your full name 2. Your email address
+[2026-09-02 21:27:26] [Session: pnndhyr1i1s] User: akshayaa
+[2026-09-02 21:28:37] [Session: pnndhyr1i1s] Bot: Hello Akshayaa! Welcome to the clinic.   Would you like to schedule a fixed appointment or are you planning a walk-in visit?
+[2026-09-02 21:28:37] [Session: pnndhyr1i1s] User: akshayaa.s@gmail.com
+[2026-09-02 21:30:50] [Session: pnndhyr1i1s] Bot: Thank you, Akshayaa. I've noted your email address (akshayaa.s@gmail.com).   Are you looking to schedule a **fixed appointment**? If so, please let me know your preferred **date and time**!   (Alternatively, if you are planning a **walk-in visit**, let me know what day and time you plan to stop by so I can check how busy the clinic might be.)
+[2026-09-02 21:32:41] [Session: bzrwsigntd] User: hi
+[2026-09-02 21:32:41] [Session: bzrwsigntd] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 21:33:18] [Session: bzrwsigntd] User: fixed appointment
+[2026-09-02 21:36:37] [Session: bzrwsigntd] Bot: Great! I can help you book a fixed appointment.   Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 21:36:39] [Session: a0x9ecwqiy] User: hi
+[2026-09-02 21:36:39] [Session: a0x9ecwqiy] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 21:38:20] [Session: jx98dor5ett] User: hi
+[2026-09-02 21:38:20] [Session: jx98dor5ett] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 21:38:26] [Session: jx98dor5ett] User: fixed appointment
+[2026-09-02 21:40:36] [Session: jx98dor5ett] Bot: Great! To schedule a fixed appointment, could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 21:42:57] [Session: test1] User: hi
+[2026-09-02 21:42:57] [Session: test1] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 21:43:15] [Session: test1] User: walk in
+[2026-09-02 21:43:15] [Session: test1] Bot: What day and time do you plan to stop by? (e.g. 'tomorrow 10 am')
+[2026-09-02 21:43:15] [Session: test1] User: tomorrow 10 am
+[2026-09-02 21:43:15] [Session: test1] Bot: Based on our predictions, the clinic will be **Busy** at 10:00 on 2026-08-09. I suggest trying 1-2 hours earlier or later!
+[2026-09-02 21:43:29] [Session: jx98dor5ett] User: tomorrow 5 pm
+[2026-09-02 21:43:29] [Session: jx98dor5ett] Bot: I'm a clinic assistant. Say 'hi' to start booking an appointment!
+[2026-09-02 21:43:36] [Session: jx98dor5ett] User: hi
+[2026-09-02 21:43:36] [Session: jx98dor5ett] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 21:43:39] [Session: jx98dor5ett] User: fixed
+[2026-09-02 21:43:39] [Session: jx98dor5ett] Bot: Great! I can help you book a fixed appointment. Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 21:43:58] [Session: jx98dor5ett] User: tomorrow 5 pm , akshayaa , akshayaa.s@gmail.com
+[2026-09-02 21:43:58] [Session: jx98dor5ett] Bot: Thank you! I have confirmed your appointment and sent a confirmation email.
+[2026-09-02 21:51:31] [Session: zkcgjkvc6bp] User: hi
+[2026-09-02 21:51:31] [Session: zkcgjkvc6bp] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 21:51:34] [Session: zkcgjkvc6bp] User: fixed
+[2026-09-02 21:51:34] [Session: zkcgjkvc6bp] Bot: Great! I can help you book a fixed appointment. Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 21:51:55] [Session: zkcgjkvc6bp] User: tomorrow mrng5
+[2026-09-02 21:51:55] [Session: zkcgjkvc6bp] Bot: Thank you! I have confirmed your appointment and sent a confirmation email.
+[2026-09-02 21:53:43] [Session: test2] User: hi
+[2026-09-02 21:53:43] [Session: test2] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 21:53:44] [Session: test2] User: fixed
+[2026-09-02 21:53:44] [Session: test2] Bot: Great! I can help you book a fixed appointment. Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 21:53:44] [Session: test2] User: tomorrow mrng5
+[2026-09-02 21:53:44] [Session: test2] Bot: Got it! To complete your booking, I still need: your full name, your email address.
+[2026-09-02 21:56:34] [Session: test_append] User: fixed
+[2026-09-02 21:56:34] [Session: test_append] Bot: I'm a clinic assistant. Say 'hi' to start booking an appointment!
+[2026-09-02 21:56:34] [Session: test_append] User: tomorrow mrng5
+[2026-09-02 21:56:34] [Session: test_append] Bot: I'm a clinic assistant. Say 'hi' to start booking an appointment!
+[2026-09-02 21:56:35] [Session: test_append] User: John Doe
+[2026-09-02 21:56:35] [Session: test_append] Bot: I'm a clinic assistant. Say 'hi' to start booking an appointment!
+[2026-09-02 21:56:35] [Session: test_append] User: john@example.com
+[2026-09-02 21:56:35] [Session: test_append] Bot: I'm a clinic assistant. Say 'hi' to start booking an appointment!
+[2026-09-02 21:57:00] [Session: test_append_real] User: hi
+[2026-09-02 21:57:00] [Session: test_append_real] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 21:57:00] [Session: test_append_real] User: fixed
+[2026-09-02 21:57:00] [Session: test_append_real] Bot: Great! I can help you book a fixed appointment. Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 21:57:01] [Session: test_append_real] User: tomorrow mrng5
+[2026-09-02 21:57:01] [Session: test_append_real] Bot: Got it! To complete your booking, I still need: your full name, your email address.
+[2026-09-02 21:57:01] [Session: test_append_real] User: John Doe
+[2026-09-02 21:57:01] [Session: test_append_real] Bot: Got it! To complete your booking, I still need: your email address.
+[2026-09-02 21:57:02] [Session: test_append_real] User: john@example.com
+[2026-09-02 21:57:02] [Session: test_append_real] Bot: Thank you! I have all the details. Your appointment is confirmed and a confirmation email has been sent!
+[2026-09-02 22:00:50] [Session: tng9ui272sm] User: hi
+[2026-09-02 22:00:50] [Session: tng9ui272sm] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 22:00:57] [Session: tng9ui272sm] User: fixed
+[2026-09-02 22:00:57] [Session: tng9ui272sm] Bot: Great! I can help you book a fixed appointment. Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 22:01:18] [Session: tng9ui272sm] User: tomorrow 10 am , akshayaa , akshayaa.s@gmail.com
+[2026-09-02 22:01:18] [Session: tng9ui272sm] Bot: Thank you! I have all the details. Your appointment is confirmed and a confirmation email has been sent!
+[2026-09-02 22:01:40] [Session: 7us4raxla4t] User: hi
+[2026-09-02 22:01:40] [Session: 7us4raxla4t] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 22:01:58] [Session: 7us4raxla4t] User: tomorrow 10 am
+[2026-09-02 22:01:58] [Session: 7us4raxla4t] Bot: Please clarify: would you like a 'fixed appointment' or a 'walk-in' visit?
+[2026-09-02 22:02:02] [Session: 7us4raxla4t] User: fixed
+[2026-09-02 22:02:02] [Session: 7us4raxla4t] Bot: Great! I can help you book a fixed appointment. Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 22:02:06] [Session: 7us4raxla4t] User: tomorrow 10 am
+[2026-09-02 22:02:06] [Session: 7us4raxla4t] Bot: Got it! To complete your booking, I still need: your full name, your email address.
+[2026-09-02 22:02:27] [Session: 7us4raxla4t] User: Rani , rani@gmail.com
+[2026-09-02 22:02:27] [Session: 7us4raxla4t] Bot: Thank you! I have all the details. Your appointment is confirmed and a confirmation email has been sent!
+[2026-09-02 22:03:40] [Session: test_walkin_nearby] User: hi
+[2026-09-02 22:03:40] [Session: test_walkin_nearby] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 22:03:40] [Session: test_walkin_nearby] User: walk in
+[2026-09-02 22:03:40] [Session: test_walkin_nearby] Bot: What day and time do you plan to stop by? (e.g. 'tomorrow 10 am')
+[2026-09-02 22:03:41] [Session: test_walkin_nearby] User: tomorrow 10 am
+[2026-09-02 22:03:41] [Session: test_walkin_nearby] Bot: Based on our predictions, the clinic will be **Busy** at 10:00 AM. I suggest coming at **9:00 AM or 11:00 AM** instead, when it's expected to be quieter.
+[2026-09-02 22:05:05] [Session: kwr46w9cyk] User: hi
+[2026-09-02 22:05:05] [Session: kwr46w9cyk] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 22:05:10] [Session: kwr46w9cyk] User: fixed
+[2026-09-02 22:05:10] [Session: kwr46w9cyk] Bot: Great! I can help you book a fixed appointment. Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 22:05:16] [Session: kwr46w9cyk] User: 10 tomorrow
+[2026-09-02 22:05:16] [Session: kwr46w9cyk] Bot: Got it! To complete your booking, I still need: your full name, your email address.
+[2026-09-02 22:05:28] [Session: kwr46w9cyk] User: keerthana , keerthu@gmail.com
+[2026-09-02 22:05:28] [Session: kwr46w9cyk] Bot: Thank you! I have all the details. Your appointment is confirmed and a confirmation email has been sent!
+[2026-09-02 22:05:49] [Session: 4th0g5y20n6] User: hi
+[2026-09-02 22:05:49] [Session: 4th0g5y20n6] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 22:05:55] [Session: 4th0g5y20n6] User: walk in
+[2026-09-02 22:05:55] [Session: 4th0g5y20n6] Bot: What day and time do you plan to stop by? (e.g. 'tomorrow 10 am')
+[2026-09-02 22:06:03] [Session: 4th0g5y20n6] User: 10 am tomorrow
+[2026-09-02 22:06:03] [Session: 4th0g5y20n6] Bot: Based on our predictions, the clinic will be **Busy** at 10:00 AM. I suggest coming at **9:00 AM or 11:00 AM** instead, when it's expected to be quieter.
+[2026-09-02 22:08:10] [Session: 4th0g5y20n6] User: 10 is between 9 and 11
+[2026-09-02 22:08:10] [Session: 4th0g5y20n6] Bot: I'm a clinic assistant. Say 'hi' to start booking an appointment!
+[2026-09-02 22:09:05] [Session: xg4qppl2n6] User: hi
+[2026-09-02 22:09:05] [Session: xg4qppl2n6] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 22:09:09] [Session: xg4qppl2n6] User: fixed
+[2026-09-02 22:09:09] [Session: xg4qppl2n6] Bot: Great! I can help you book a fixed appointment. Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 22:09:25] [Session: xg4qppl2n6] User: tomorrow 10 , karish , karish@gmail.com
+[2026-09-02 22:09:25] [Session: xg4qppl2n6] Bot: Thank you! I have all the details. Your appointment is confirmed and a confirmation email has been sent!
+[2026-09-02 22:12:08] [Session: test_walkin_exact] User: hi
+[2026-09-02 22:12:08] [Session: test_walkin_exact] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 22:12:08] [Session: test_walkin_exact] User: walk in
+[2026-09-02 22:12:08] [Session: test_walkin_exact] Bot: What day and time do you plan to stop by? (e.g. 'tomorrow 10 am')
+[2026-09-02 22:12:09] [Session: test_walkin_exact] User: tomorrow 10 am
+[2026-09-02 22:12:09] [Session: test_walkin_exact] Bot: Based on our predictions, the clinic will be **Busy** at 10:00 AM on 2026-08-09. I suggest coming at **9:30 AM or 10:30 AM** instead, when it's expected to be quieter.
+[2026-09-02 22:14:29] [Session: test_walkin_tool] User: hi
+[2026-09-02 22:14:29] [Session: test_walkin_tool] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 22:14:30] [Session: test_walkin_tool] User: walk in
+[2026-09-02 22:14:30] [Session: test_walkin_tool] Bot: What day and time do you plan to stop by? (e.g. 'tomorrow 10 am')
+[2026-09-02 22:14:30] [Session: test_walkin_tool] User: tomorrow 10 am
+[2026-09-02 22:14:30] [Session: test_walkin_tool] Bot: Based on our predictions, the clinic will be **Busy** at 10:00 AM on 2026-08-09. I suggest coming at **9:30 AM or 10:30 AM** instead, when it's expected to be quieter.
+[2026-09-02 22:16:58] [Session: mcd3m688pv8] User: hi
+[2026-09-02 22:16:58] [Session: mcd3m688pv8] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 22:17:03] [Session: mcd3m688pv8] User: fixed
+[2026-09-02 22:17:03] [Session: mcd3m688pv8] Bot: Great! I can help you book a fixed appointment. Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 22:17:07] [Session: mcd3m688pv8] User: tomorrow 10
+[2026-09-02 22:17:07] [Session: mcd3m688pv8] Bot: Got it! To complete your booking, I still need: your full name, your email address.
+[2026-09-02 22:17:22] [Session: mcd3m688pv8] User: kaviya , kaviya@gmail.com
+[2026-09-02 22:17:22] [Session: mcd3m688pv8] Bot: Thank you! I have all the details. Your appointment is confirmed and a confirmation email has been sent!
+[2026-09-02 22:18:38] [Session: obawwwaf1db] User: hi
+[2026-09-02 22:18:38] [Session: obawwwaf1db] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 22:18:45] [Session: obawwwaf1db] User: fixed
+[2026-09-02 22:18:45] [Session: obawwwaf1db] Bot: Great! I can help you book a fixed appointment. Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 22:18:50] [Session: obawwwaf1db] User: tomorrow 10
+[2026-09-02 22:18:50] [Session: obawwwaf1db] Bot: Got it! To complete your booking, I still need: your full name, your email address.
+[2026-09-02 22:19:03] [Session: obawwwaf1db] User: samantha , sam@gmail.com
+[2026-09-02 22:19:03] [Session: obawwwaf1db] Bot: Thank you, Santha! I have all the details. Your appointment for 10:00 AM on 2026-08-09 is confirmed and a confirmation email has been sent to sam@gmail.com!
+[2026-09-02 22:20:55] [Session: test_fixed_tool] User: hi
+[2026-09-02 22:20:55] [Session: test_fixed_tool] Bot: Hello! Welcome to the Clinic. Would you like to schedule a fixed appointment, or are you planning a walk-in visit?
+[2026-09-02 22:20:56] [Session: test_fixed_tool] User: fixed
+[2026-09-02 22:20:56] [Session: test_fixed_tool] Bot: Great! I can help you book a fixed appointment. Could you please provide your preferred date and time, your full name, and your email address?
+[2026-09-02 22:20:56] [Session: test_fixed_tool] User: tomorrow 10
+[2026-09-02 22:20:56] [Session: test_fixed_tool] Bot: I'm sorry, but the 10:00 AM slot on 2026-08-09 is not available. Please suggest a different time.
+[2026-09-02 22:41:50] [Session: pv0zz472qb] User: hi
+[2026-09-02 22:41:51] [Session: pv0zz472qb] Bot: Hello! 👋 Welcome to the Clinic Assistant.  Would you like to schedule a **fixed appointment** (guaranteed slot) or are you planning a **walk-in visit**?
