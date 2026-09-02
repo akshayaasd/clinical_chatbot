@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 from sklearn.ensemble import RandomForestClassifier
 
 def generate_synthetic_data(days=60):
-    start_date = datetime.strptime("2026-08-01", "%Y-%m-%d")
+    # Start 30 days in the past so the generated data spans up to the future
+    start_date = datetime.now() - timedelta(days=30)
     records = []
     
     np.random.seed(42) # For reproducibility
@@ -24,11 +25,11 @@ def generate_synthetic_data(days=60):
             # Pick session: morning or evening
             session = np.random.choice(["Morning", "Evening"], p=[0.4, 0.6])
             if session == "Morning":
-                # 8:00 AM - 12:00 PM
+                # 8:00 AM - 12:00 PM (11 is the last full hour slot)
                 hour = np.random.randint(8, 12)
                 minute = np.random.choice([0, 15, 30, 45])
             else:
-                # 4:00 PM - 10:00 PM (16:00 - 22:00)
+                # 4:00 PM - 10:00 PM (16:00 - 22:00, 21 is the last full hour slot)
                 hour = np.random.randint(16, 22)
                 minute = np.random.choice([0, 15, 30, 45])
             
