@@ -295,6 +295,36 @@ def is_reset_request(text: str) -> bool:
         return False
 
 
+def get_booking_count(date_str: str, time_str: str) -> int:
+    """Check how many fixed appointments already exist for a specific slot."""
+    try:
+        csv_path = "data/sample_visits.csv"
+        if not os.path.exists(csv_path):
+            return 0
+        df = pd.read_csv(csv_path)
+        if 'Date' not in df.columns or 'Visit Time' not in df.columns:
+            return 0
+        return len(df[(df['Date'] == date_str) & (df['Visit Time'] == time_str)])
+    except Exception as e:
+        logger.error(f"Error reading bookings: {e}")
+        return 0
+
+
+def suggest_alternative_fixed_slots(date_str: str, requested_hour: int) -> list:
+    """Find nearby slots that are not fully booked."""
+    alternatives = []
+    for offset in [1, -1, 2, -2, 3, -3]:
+        candidate = requested_hour + offset
+        if candidate in VALID_HOURS:
+            disp_h, ap = format_hour(candidate)
+            time_str = f"{disp_h:02d}:00 {ap}"
+            if get_booking_count(date_str, time_str) < 2:  # Max 2 patients per hour
+                alternatives.append(f"{disp_h}:00 {ap}")
+        if len(alternatives) >= 2:
+            break
+    return alternatives
+
+
 # ─────────────────────────────────────────────
 # FastAPI app
 # ─────────────────────────────────────────────
@@ -425,9 +455,19 @@ async def chat_endpoint(req: MessageReq):
                             "Please choose a time within those hours."
                         )
                     else:
-                        # Fix #6: Fixed appointments are GUARANTEED — no ML busyness check
-                        details["date"] = date_str
-                        details["hour"] = hour
+                        # Check capacity (max 2 per hour)
+                        disp_h, ap = format_hour(hour)
+                        time_str = f"{disp_h:02d}:00 {ap}"
+                        if get_booking_count(date_str, time_str) >= 2:
+                            alts = suggest_alternative_fixed_slots(date_str, hour)
+                            alt_msg = f" How about **{'** or **'.join(alts)}**?" if alts else ""
+                            resp_text = (
+                                f"I'm sorry, but our fixed appointments for **{time_str}** on {date_str} "
+                                f"are fully booked.{alt_msg} Please suggest another time."
+                            )
+                        else:
+                            details["date"] = date_str
+                            details["hour"] = hour
 
                 # 3. Extract name using NLTK POS tagging (Fix #3)
                 if not details["name"]:
