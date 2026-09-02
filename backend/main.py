@@ -214,24 +214,35 @@ def parse_walkin_time(user_msg: str):
 
 def extract_name_nlp(text: str) -> str:
     """
-    Fix #3: Extract person name using NLTK POS tagging.
-    Looks for consecutive NNP/NNPS (proper noun) tokens after removing
-    email addresses and time-related tokens.
+    Extract person name using NLTK POS tagging.
+    Fix #3: Looks for NNP/NNPS. If that fails (e.g. lowercase single words),
+    uses a fallback for short conversational replies.
     """
     try:
         clean = re.sub(r"[\w\.-]+@[\w\.-]+\.\w+", "", text)
-        clean = re.sub(
-            r"\b(am|pm|today|tomorrow|morning|evening|afternoon|night|\d+)\b",
-            "",
-            clean,
-            flags=re.IGNORECASE
-        )
+        
+        # 1. Try strict NLTK proper noun extraction
         tokens = word_tokenize(clean)
         tagged = pos_tag(tokens)
         name_parts = [word.capitalize() for word, tag in tagged
                       if tag in ('NNP', 'NNPS') and len(word) > 1]
         if name_parts:
             return " ".join(name_parts[:3])  # max 3 words
+            
+        # 2. Fallback for short replies (e.g., "toffee", "that is the name toffee")
+        clean_fallback = re.sub(
+            r"\b(am|pm|today|tomorrow|day after tomorrow|morning|evening|afternoon|night|\d+|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b",
+            "", clean, flags=re.IGNORECASE)
+        clean_fallback = re.sub(
+            r"\b(my|name|is|that|this|the|it|yes|no|please|book|an|appointment|for|i|am|want|to|are|you|and|at|on|have|a)\b",
+            "", clean_fallback, flags=re.IGNORECASE)
+            
+        words = [w.capitalize() for w in re.findall(r"\b[a-zA-Z]{2,}\b", clean_fallback)]
+        
+        # Only apply fallback if the user's message was relatively short
+        if len(re.findall(r"\b[a-zA-Z]+\b", clean)) <= 7 and words:
+            return " ".join(words[:3])
+            
     except Exception as e:
         logger.warning(f"NLTK name extraction failed: {e}")
     return None
