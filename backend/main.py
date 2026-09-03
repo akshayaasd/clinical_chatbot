@@ -323,22 +323,28 @@ async def chat_endpoint(req: MessageReq):
                     details["email"] = email_match.group(0)
 
             # Date & Time
-            if not details["date"] and re.search(r"(tomorrow|today|monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun|am|pm|\d{1,2})", msg_lower):
+            if (not details["date"] or details["hour"] is None) and re.search(r"(tomorrow|today|monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun|am|pm|\d{1,2})", msg_lower):
                 date_str, hour = parse_time(msg_lower)
-                details["date"] = date_str
+                has_date = re.search(r"(tomorrow|today|monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun|\d{4}-\d{2}-\d{2})", msg_lower)
+                
+                if has_date:
+                    details["date"] = date_str
+                elif not details["date"]:
+                    details["date"] = date_str
+
                 if hour is not None:
                     if hour not in VALID_HOURS:
                         disp_h, ap = format_hour(hour)
                         resp_text = ("I'm sorry, **{}:00 {}** is outside our working hours. "
                                      "We're open **8 AM–12 PM** and **4 PM–10 PM**.").format(disp_h, ap)
-                        details["date"] = None
+                        details["hour"] = None
                     else:
                         disp_h, ap = format_hour(hour)
                         time_str = "{:02d}:00 {}".format(disp_h, ap)
-                        if get_booking_count(date_str, time_str) >= 2:
+                        if get_booking_count(details["date"], time_str) >= 2:
                             resp_text = ("That slot is fully booked. "
                                          "Please suggest a different time.")
-                            details["date"] = None
+                            details["hour"] = None
                         else:
                             details["hour"] = hour
 
@@ -401,6 +407,14 @@ async def chat_endpoint(req: MessageReq):
         # ── AWAITING_WALKIN_TIME (LLM USED HERE) ──
         elif state == "AWAITING_WALKIN_TIME":
             date_str, hour = parse_time(msg_lower)
+            has_date = re.search(r"(tomorrow|today|monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun|\d{4}-\d{2}-\d{2})", msg_lower)
+            
+            if has_date:
+                session["walkin_date"] = date_str
+            elif session.get("walkin_date"):
+                date_str = session["walkin_date"]
+            else:
+                session["walkin_date"] = date_str
 
             if hour is None:
                 resp_text = ("Could you specify an exact hour? (e.g., '10 AM' or '4 PM'). "
