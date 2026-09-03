@@ -419,7 +419,7 @@ async def chat_endpoint(req: MessageReq):
                     "- If Normal: let them know it should be a reasonable time with moderate wait.\n"
                     "- If Free: confirm it's a good, quiet time to visit.\n"
                     "- Keep the response to 2-3 sentences max. Be professional.\n"
-                    "- Do NOT ask questions. Do NOT offer to 'schedule' or 'book' it (walk-ins are just drop-ins)."
+                    "- CRITICAL: End with a statement. DO NOT ask any questions whatsoever. No question marks allowed."
                 ).format(disp_h, ap, date_str, datetime.strptime(date_str, "%Y-%m-%d").strftime("%A"),
                          prediction, nearby_info)
 
@@ -427,15 +427,21 @@ async def chat_endpoint(req: MessageReq):
 
         # ── AWAITING_ANYTHING_ELSE ──
         elif state == "AWAITING_ANYTHING_ELSE":
-            end_words = {"no", "nothing", "thanks", "thank you", "nope", "bye", "goodbye", "ok", "okay", "fine"}
-            if any(w in msg_lower.split() for w in end_words) and not re.search(r'\d', msg_lower):
-                resp_text = ("Thank you for choosing our clinic! Have a healthy day! 🌟\n"
+            if re.search(r'\d|am|pm', msg_lower):
+                # The user is confirming one of the suggested times!
+                resp_text = ("Perfect, you are welcome to drop by then! Thank you for choosing our clinic. Have a healthy day! 🌟\n"
                              "Say **'hi'** anytime if you need help.")
                 session["state"] = "INIT"
             else:
-                resp_text = ("How can I help? Would you like a **fixed appointment** "
-                             "or a **walk-in visit**?")
-                session["state"] = "AWAITING_TYPE"
+                end_words = {"no", "nothing", "thanks", "thank you", "nope", "bye", "goodbye", "ok", "okay", "fine", "yes", "sure", "yep"}
+                if any(w in msg_lower.split() for w in end_words):
+                    resp_text = ("Thank you for choosing our clinic! Have a healthy day! 🌟\n"
+                                 "Say **'hi'** anytime if you need help.")
+                    session["state"] = "INIT"
+                else:
+                    resp_text = ("How can I help? Would you like a **fixed appointment** "
+                                 "or a **walk-in visit**?")
+                    session["state"] = "AWAITING_TYPE"
 
         # ── RESPONSE ──
         async def generate():
