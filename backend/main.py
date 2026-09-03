@@ -189,13 +189,13 @@ async def chat_endpoint(req: MessageReq):
     try:
         session = get_chat_session(req.session_id)
         
-        # We need a generator to yield streaming chunks compatible with SSE
         async def generate():
-            response = session.send_message(req.message, stream=True)
-            for chunk in response:
-                if chunk.text:
-                    data = {"content": chunk.text}
-                    yield f"data: {json.dumps(data)}\n\n"
+            # The Gemini SDK does not support stream=True concurrently with automatic function calling.
+            # We fetch the full response and stream it as a single chunk to satisfy the frontend's SSE format.
+            response = await asyncio.to_thread(session.send_message, req.message, stream=False)
+            if response.text:
+                data = {"content": response.text}
+                yield f"data: {json.dumps(data)}\n\n"
                     
         return StreamingResponse(generate(), media_type="text/event-stream")
         
