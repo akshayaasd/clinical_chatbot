@@ -418,7 +418,8 @@ async def chat_endpoint(req: MessageReq):
                     "- If Busy: politely inform them it will be crowded, and suggest 1-2 quieter nearby times from the data above.\n"
                     "- If Normal: let them know it should be a reasonable time with moderate wait.\n"
                     "- If Free: confirm it's a good, quiet time to visit.\n"
-                    "- Keep the response to 2-3 sentences max. Be professional."
+                    "- Keep the response to 2-3 sentences max. Be professional.\n"
+                    "- Do NOT ask questions. Do NOT offer to 'schedule' or 'book' it (walk-ins are just drop-ins)."
                 ).format(disp_h, ap, date_str, datetime.strptime(date_str, "%Y-%m-%d").strftime("%A"),
                          prediction, nearby_info)
 
@@ -426,27 +427,24 @@ async def chat_endpoint(req: MessageReq):
 
         # ── AWAITING_ANYTHING_ELSE ──
         elif state == "AWAITING_ANYTHING_ELSE":
-            yes_words = {"yes", "yeah", "yep", "sure", "okay", "ok", "please", "more", "another"}
-            if any(w in msg_lower.split() for w in yes_words):
-                resp_text = ("How can I help? Would you like a **fixed appointment** "
-                             "or a **walk-in visit**?")
-                session["state"] = "AWAITING_TYPE"
-            else:
+            end_words = {"no", "nothing", "thanks", "thank you", "nope", "bye", "goodbye", "ok", "okay", "fine"}
+            if any(w in msg_lower.split() for w in end_words) and not re.search(r'\d', msg_lower):
                 resp_text = ("Thank you for choosing our clinic! Have a healthy day! 🌟\n"
                              "Say **'hi'** anytime if you need help.")
                 session["state"] = "INIT"
+            else:
+                resp_text = ("How can I help? Would you like a **fixed appointment** "
+                             "or a **walk-in visit**?")
+                session["state"] = "AWAITING_TYPE"
 
         # ── RESPONSE ──
         async def generate():
             if use_llm:
                 # Only LLM call in the entire app — for walk-in prediction interpretation
-                
-                # Show the local ML prediction log in the UI
-                log_msg = f"_🔍 ML Model local execution: Predicted '{prediction}' for {disp_h}:00 {ap}. Formulating response..._"
-                yield f'data: {json.dumps({"content": log_msg})}\n\n'
-                
                 try:
                     llm_text = await asyncio.to_thread(call_llm, llm_prompt)
+                    # Append our state-machine question explicitly so the user isn't confused
+                    llm_text += "\n\nIs there anything else I can help you with?"
                     yield f'data: {json.dumps({"content": llm_text})}\n\n'
                 except Exception as e:
                     err = str(e)
