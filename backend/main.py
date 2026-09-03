@@ -169,7 +169,7 @@ def parse_time(user_msg: str):
             date_str = "{}-{}-{:02d}".format(today.year, month_map[md2.group(1)], int(md2.group(2)))
             msg_for_hour = msg.replace(md2.group(0), " ")
 
-    hour = 10
+    hour = None
     hm = re.search(r'\b(\d{1,2})\s*(am|pm)\b', msg_for_hour)
     if hm:
         h = int(hm.group(1))
@@ -268,13 +268,28 @@ async def chat_endpoint(req: MessageReq):
         # ── INIT ──
         elif state == "INIT":
             greet_words = {"hi", "hello", "hey", "greetings", "hii", "howdy", "start"}
-            if any(w in msg_lower.split() for w in greet_words):
-                resp_text = ("Hello! 👋 Welcome to our Clinic.\n\n"
-                             "Would you like to schedule a **fixed appointment** (guaranteed slot) "
-                             "or are you planning a **walk-in visit**?")
-                session["state"] = "AWAITING_TYPE"
+            # Allow skipping greeting if they mention their intent
+            if any(w in msg_lower.split() for w in greet_words) or any(w in msg_lower for w in ["book", "appointment", "walk", "visit", "schedule", "fixed"]):
+                # Fast track logic based on intent
+                if "fixed" in msg_lower or "appointment" in msg_lower or "book" in msg_lower or "schedule" in msg_lower:
+                    resp_text = ("Hello! For a **fixed appointment**, please share your:\n"
+                                 "- 📅 Preferred **date & time**\n"
+                                 "- 👤 **Full name**\n"
+                                 "- 📧 **Email address**\n\n"
+                                 "Feel free to provide them all at once or one at a time!")
+                    session["state"] = "AWAITING_FIXED_DETAILS"
+                    session["fixed_details"] = {"date": None, "hour": None, "name": None, "email": None}
+                elif "walk" in msg_lower or "visit" in msg_lower or "drop" in msg_lower or "come" in msg_lower:
+                    resp_text = ("Hello! For a walk-in, what **day and time** are you planning to visit?\n"
+                                 "(e.g. *'tomorrow 10 am'* or *'5 pm today'*)")
+                    session["state"] = "AWAITING_WALKIN_TIME"
+                else:
+                    resp_text = ("Hello! 👋 Welcome to our Clinic.\n\n"
+                                 "Would you like to schedule a **fixed appointment** (guaranteed slot) "
+                                 "or are you planning a **walk-in visit**?")
+                    session["state"] = "AWAITING_TYPE"
             else:
-                resp_text = "Hi there! I'm the Clinic Assistant. Say **'hi'** to get started! 🏥"
+                resp_text = "Hi there! I'm the Clinic Assistant. How can I help you today? (You can say 'book an appointment' or 'walk-in')."
 
         # ── AWAITING_TYPE ──
         elif state == "AWAITING_TYPE":
@@ -308,26 +323,29 @@ async def chat_endpoint(req: MessageReq):
                     details["email"] = email_match.group(0)
 
             # Date & Time
-            if not details["date"] and re.search(r"(tomorrow|today|am|pm|\d{1,2})", msg_lower):
+            if not details["date"] and re.search(r"(tomorrow|today|monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun|am|pm|\d{1,2})", msg_lower):
                 date_str, hour = parse_time(msg_lower)
-                if hour not in VALID_HOURS:
-                    disp_h, ap = format_hour(hour)
-                    resp_text = ("I'm sorry, **{}:00 {}** is outside our working hours. "
-                                 "We're open **8 AM–12 PM** and **4 PM–10 PM**.").format(disp_h, ap)
-                else:
-                    disp_h, ap = format_hour(hour)
-                    time_str = "{:02d}:00 {}".format(disp_h, ap)
-                    if get_booking_count(date_str, time_str) >= 2:
-                        resp_text = ("That slot is fully booked. "
-                                     "Please suggest a different time.")
+                details["date"] = date_str
+                if hour is not None:
+                    if hour not in VALID_HOURS:
+                        disp_h, ap = format_hour(hour)
+                        resp_text = ("I'm sorry, **{}:00 {}** is outside our working hours. "
+                                     "We're open **8 AM–12 PM** and **4 PM–10 PM**.").format(disp_h, ap)
+                        details["date"] = None
                     else:
-                        details["date"] = date_str
-                        details["hour"] = hour
+                        disp_h, ap = format_hour(hour)
+                        time_str = "{:02d}:00 {}".format(disp_h, ap)
+                        if get_booking_count(date_str, time_str) >= 2:
+                            resp_text = ("That slot is fully booked. "
+                                         "Please suggest a different time.")
+                            details["date"] = None
+                        else:
+                            details["hour"] = hour
 
             # Name — fallback: strip emails, times, filler words; take remaining
             if not details["name"]:
                 clean = re.sub(r"[\w\.-]+@[\w\.-]+\.\w+", "", msg)
-                clean = re.sub(r"\b(am|pm|today|tomorrow|\d+)\b", "", clean, flags=re.IGNORECASE)
+                clean = re.sub(r"\b(am|pm|today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|wed|thu|fri|sat|sun|\d+)\b", "", clean, flags=re.IGNORECASE)
                 clean = re.sub(
                     r"\b(my|name|is|that|this|the|it|yes|no|please|book|an|appointment|for|"
                     r"i|want|to|are|you|and|at|on|have|a|hi|hello|fixed|email)\b",
@@ -338,8 +356,8 @@ async def chat_endpoint(req: MessageReq):
 
             # Missing check
             missing = []
-            if not details["date"]:
-                missing.append("your preferred **date & time**")
+            if not details["date"] or details["hour"] is None:
+                missing.append("your preferred **date & time (e.g. 10 AM or 4 PM)**")
             if not details["name"]:
                 missing.append("your **full name**")
             if not details["email"]:
@@ -384,7 +402,10 @@ async def chat_endpoint(req: MessageReq):
         elif state == "AWAITING_WALKIN_TIME":
             date_str, hour = parse_time(msg_lower)
 
-            if hour not in VALID_HOURS:
+            if hour is None:
+                resp_text = ("Could you specify an exact hour? (e.g., '10 AM' or '4 PM'). "
+                             "Our hours are **8 AM–12 PM** and **4 PM–10 PM**.")
+            elif hour not in VALID_HOURS:
                 disp_h, ap = format_hour(hour)
                 resp_text = ("I'm sorry, **{}:00 {}** is outside our working hours. "
                              "We're open **8 AM–12 PM** and **4 PM–10 PM**. "
