@@ -59,7 +59,15 @@ elif LLM_PROVIDER == "ollama" and not ollama_available:
 print(f"🤖 LLM Provider: {LLM_PROVIDER.upper()}" +
       (f" (model: {OLLAMA_MODEL})" if LLM_PROVIDER == "ollama" else ""))
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+os.makedirs("logs", exist_ok=True)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[
+        logging.FileHandler("logs/app.log"),
+        logging.StreamHandler()
+    ]
+)
 logger = logging.getLogger("clinic_chatbot")
 
 # ─── ML MODEL SETUP ───
@@ -254,6 +262,8 @@ async def chat_endpoint(req: MessageReq):
     msg = req.message.strip()
     msg_lower = msg.lower()
 
+    logger.info(f"[Session: {req.session_id}] State: {state} | User: '{msg}'")
+
     resp_text = ""
     use_llm = False
     llm_prompt = ""
@@ -428,6 +438,7 @@ async def chat_endpoint(req: MessageReq):
                 # Run ML prediction
                 prediction = predict_busyness(date_str, hour)
                 disp_h, ap = format_hour(hour)
+                logger.info(f"[Session: {req.session_id}] ML Prediction for {date_str} {disp_h}:00 {ap} -> {prediction}")
 
                 # Also check nearby hours if busy
                 nearby_info = ""
@@ -489,15 +500,19 @@ async def chat_endpoint(req: MessageReq):
 
         # ── RESPONSE ──
         async def generate():
+            logger.info(f"[Session: {req.session_id}] State transition: {state} -> {session['state']}")
             if use_llm:
                 # Only LLM call in the entire app — for walk-in prediction interpretation
                 try:
+                    logger.info(f"[Session: {req.session_id}] Calling LLM provider ({LLM_PROVIDER})...")
                     llm_text = await asyncio.to_thread(call_llm, llm_prompt)
                     # Append our state-machine question explicitly so the user isn't confused
                     llm_text += "\n\nIs there anything else I can help you with?"
+                    logger.info(f"[Session: {req.session_id}] LLM response successfully generated.")
                     yield f'data: {json.dumps({"content": llm_text})}\n\n'
                 except Exception as e:
                     err = str(e)
+                    logger.error(f"[Session: {req.session_id}] LLM Error: {err}")
                     if "429" in err:
                         yield f'data: {json.dumps({"content": "⏳ API rate limited. Please wait 30 seconds and try again."})}\n\n'
                     else:
