@@ -463,10 +463,19 @@ async def chat_endpoint(req: MessageReq):
         # ── AWAITING_ANYTHING_ELSE ──
         elif state == "AWAITING_ANYTHING_ELSE":
             if re.search(r'\d|am|pm', msg_lower):
-                # The user is confirming one of the suggested times!
-                resp_text = ("Perfect, you are welcome to drop by then! Thank you for choosing our clinic. Have a healthy day! 🌟\n"
-                             "Say **'hi'** anytime if you need help.")
-                session["state"] = "INIT"
+                # The user is confirming one of the suggested times, or suggesting a new one!
+                _, hour = parse_time(msg_lower)
+                
+                if hour is not None and hour not in VALID_HOURS:
+                    disp_h, ap = format_hour(hour)
+                    resp_text = ("I'm sorry, **{}:00 {}** is outside our working hours. "
+                                 "We're open **8 AM–12 PM** and **4 PM–10 PM**. "
+                                 "Please choose a valid time.").format(disp_h, ap)
+                    session["state"] = "AWAITING_WALKIN_TIME"
+                else:
+                    resp_text = ("Perfect, you are welcome to drop by then! Thank you for choosing our clinic. Have a healthy day! 🌟\n"
+                                 "Say **'hi'** anytime if you need help.")
+                    session["state"] = "INIT"
             else:
                 end_words = {"no", "nothing", "thanks", "thank you", "nope", "bye", "goodbye", "ok", "okay", "fine", "yes", "sure", "yep"}
                 if any(w in msg_lower.split() for w in end_words):
