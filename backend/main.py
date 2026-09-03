@@ -396,13 +396,16 @@ async def chat_endpoint(req: MessageReq):
                 # 🔥 Use LLM to formulate a natural response based on ML data
                 use_llm = True
                 llm_prompt = (
-                    "The patient wants to walk in at {}:00 {} on {} ({}).\n"
-                    "ML Model Prediction: {}\n"
+                    "You are a professional clinic receptionist. Respond in a calm, helpful, clinical tone. "
+                    "Do NOT use party emojis or overly enthusiastic language. This is a medical facility.\n\n"
+                    "Patient wants to walk in at {}:00 {} on {} ({}).\n"
+                    "ML Model Prediction for that slot: {}\n"
                     "{}\n\n"
-                    "Based on this data, give a short, friendly response. "
-                    "If Busy, suggest 1-2 quieter nearby times from the data above. "
-                    "If Normal or Free, confirm it's a good time. "
-                    "Keep it concise with emojis."
+                    "Rules:\n"
+                    "- If Busy: politely inform them it will be crowded, and suggest 1-2 quieter nearby times from the data above.\n"
+                    "- If Normal: let them know it should be a reasonable time with moderate wait.\n"
+                    "- If Free: confirm it's a good, quiet time to visit.\n"
+                    "- Keep the response to 2-3 sentences max. Be professional."
                 ).format(disp_h, ap, date_str, datetime.strptime(date_str, "%Y-%m-%d").strftime("%A"),
                          prediction, nearby_info)
 
