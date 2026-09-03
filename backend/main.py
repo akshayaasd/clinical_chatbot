@@ -5,8 +5,8 @@ import asyncio
 import pickle
 import re
 import pandas as pd
+import requests as http_requests
 from datetime import datetime, timedelta
-import google.generativeai as genai
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,11 +14,50 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# ─── LLM PROVIDER CONFIG ───
+# Priority: OLLAMA (local, free, no rate limits) > GEMINI (cloud API)
+# Set LLM_PROVIDER in .env to force one: "ollama" or "gemini"
+# If not set, auto-detects: tries Ollama first, falls back to Gemini.
+
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "auto").lower()
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
+
+# Check Ollama availability
+ollama_available = False
+try:
+    r = http_requests.get(f"{OLLAMA_URL}/api/tags", timeout=2)
+    if r.status_code == 200:
+        ollama_available = True
+except Exception:
+    pass
+
+# Setup Gemini if needed
+gemini_available = False
 api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
+    import google.generativeai as genai
     genai.configure(api_key=api_key)
-else:
-    print("WARNING: GEMINI_API_KEY not found in environment!")
+    gemini_available = True
+
+# Resolve provider
+if LLM_PROVIDER == "auto":
+    if ollama_available:
+        LLM_PROVIDER = "ollama"
+    elif gemini_available:
+        LLM_PROVIDER = "gemini"
+    else:
+        LLM_PROVIDER = "none"
+elif LLM_PROVIDER == "gemini" and not gemini_available:
+    print("WARNING: GEMINI_API_KEY not set! Falling back.")
+    LLM_PROVIDER = "ollama" if ollama_available else "none"
+elif LLM_PROVIDER == "ollama" and not ollama_available:
+    print("WARNING: Ollama not running! Falling back.")
+    LLM_PROVIDER = "gemini" if gemini_available else "none"
+
+print(f"🤖 LLM Provider: {LLM_PROVIDER.upper()}" +
+      (f" (model: {OLLAMA_MODEL})" if LLM_PROVIDER == "ollama" else ""))
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("clinic_chatbot")
@@ -142,6 +181,34 @@ def parse_time(user_msg: str):
                 hour = h
 
     return date_str, hour
+
+
+# ─── LLM CALL (Ollama or Gemini) ───
+def call_llm(prompt: str) -> str:
+    """
+    Routes the prompt to the configured LLM provider.
+    Ollama: local, free, no rate limits.
+    Gemini: cloud API, fast, but rate-limited on free tier.
+    """
+    if LLM_PROVIDER == "ollama":
+        logger.info(f"🦙 Calling Ollama ({OLLAMA_MODEL})...")
+        resp = http_requests.post(
+            f"{OLLAMA_URL}/api/generate",
+            json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False},
+            timeout=60
+        )
+        resp.raise_for_status()
+        return resp.json().get("response", "Sorry, I couldn't generate a response.")
+
+    elif LLM_PROVIDER == "gemini":
+        logger.info("✨ Calling Gemini API...")
+        model = genai.GenerativeModel(model_name='gemini-2.5-flash')
+        response = model.generate_content(prompt)
+        return response.text or "Sorry, I couldn't generate a response."
+
+    else:
+        logger.warning("No LLM provider available. Returning fallback.")
+        return "Sorry, no LLM is configured. Please set up Ollama or a Gemini API key."
 
 
 # ─── FASTAPI APP ───
@@ -357,12 +424,10 @@ async def chat_endpoint(req: MessageReq):
         async def generate():
             if use_llm:
                 # Only LLM call in the entire app — for walk-in prediction interpretation
+                yield f'data: {json.dumps({"content": "_🔍 Checking clinic busyness with ML model..._"})}\n\n'
                 try:
-                    model = genai.GenerativeModel(model_name='gemini-2.5-flash')
-                    yield f'data: {json.dumps({"content": "_🔍 Checking clinic busyness with ML model..._"})}\n\n'
-                    response = await asyncio.to_thread(model.generate_content, llm_prompt)
-                    if response.text:
-                        yield f'data: {json.dumps({"content": response.text})}\n\n'
+                    llm_text = await asyncio.to_thread(call_llm, llm_prompt)
+                    yield f'data: {json.dumps({"content": llm_text})}\n\n'
                 except Exception as e:
                     err = str(e)
                     if "429" in err:
