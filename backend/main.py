@@ -137,6 +137,19 @@ def parse_time(user_msg: str):
         date_str = (today + timedelta(days=1)).strftime("%Y-%m-%d")
     elif "today" in msg:
         date_str = today.strftime("%Y-%m-%d")
+    else:
+        # Check for day-of-week names (e.g. "saturday", "monday")
+        day_names = {"monday": 0, "tuesday": 1, "wednesday": 2, "thursday": 3,
+                     "friday": 4, "saturday": 5, "sunday": 6,
+                     "mon": 0, "tue": 1, "wed": 2, "thu": 3,
+                     "fri": 4, "sat": 5, "sun": 6}
+        for name, target_weekday in day_names.items():
+            if name in msg:
+                days_ahead = (target_weekday - today.weekday()) % 7
+                if days_ahead == 0:
+                    days_ahead = 7  # next week if same day
+                date_str = (today + timedelta(days=days_ahead)).strftime("%Y-%m-%d")
+                break
 
     msg_for_hour = msg
     yyyy_match = re.search(r'\d{4}-\d{2}-\d{2}', msg)
@@ -427,7 +440,11 @@ async def chat_endpoint(req: MessageReq):
         async def generate():
             if use_llm:
                 # Only LLM call in the entire app — for walk-in prediction interpretation
-                yield f'data: {json.dumps({"content": "_🔍 Checking clinic busyness with ML model..._"})}\n\n'
+                
+                # Show the local ML prediction log in the UI
+                log_msg = f"_🔍 ML Model local execution: Predicted '{prediction}' for {disp_h}:00 {ap}. Formulating response..._"
+                yield f'data: {json.dumps({"content": log_msg})}\n\n'
+                
                 try:
                     llm_text = await asyncio.to_thread(call_llm, llm_prompt)
                     yield f'data: {json.dumps({"content": llm_text})}\n\n'
