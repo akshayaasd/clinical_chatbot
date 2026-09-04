@@ -8,6 +8,8 @@ import pandas as pd
 import requests as http_requests
 from datetime import datetime, timedelta
 from fastapi import FastAPI, HTTPException
+import smtplib
+from email.message import EmailMessage
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -327,7 +329,7 @@ async def chat_endpoint(req: MessageReq):
             details = session["fixed_details"]
 
             # Email
-            if not details["email"]:
+            if not details.get("email"):
                 email_match = re.search(r"[\w\.-]+@[\w\.-]+\.\w+", msg)
                 if email_match:
                     details["email"] = email_match.group(0)
@@ -376,7 +378,7 @@ async def chat_endpoint(req: MessageReq):
                 missing.append("your preferred **date & time (e.g. 10 AM or 4 PM)**")
             if not details["name"]:
                 missing.append("your **full name**")
-            if not details["email"]:
+            if not details.get("email"):
                 missing.append("your **email address**")
 
             if resp_text:
@@ -398,6 +400,35 @@ async def chat_endpoint(req: MessageReq):
                     "📧 **Confirmation sent to:** {}\n\n"
                     "See you then! 😊"
                 ).format(details["name"], day_full, details["date"], time_str, details["email"])
+
+                # Send Email via SMTP
+                try:
+                    smtp_server = os.getenv("SMTP_SERVER")
+                    smtp_port = os.getenv("SMTP_PORT")
+                    smtp_user = os.getenv("SMTP_USERNAME")
+                    smtp_pass = os.getenv("SMTP_PASSWORD")
+                    
+                    if smtp_server and smtp_port and smtp_user and smtp_pass:
+                        msg = EmailMessage()
+                        msg.set_content(f"Hello {details['name']},\n\nYour appointment at the Clinic is confirmed.\n\nDate: {day_full}, {details['date']}\nTime: {time_str}\n\nSee you then!\n\nBest regards,\nClinic Assistant")
+                        msg['Subject'] = 'Appointment Confirmation'
+                        msg['From'] = smtp_user
+                        msg['To'] = details["email"]
+
+                        if int(smtp_port) == 465:
+                            with smtplib.SMTP_SSL(smtp_server, int(smtp_port), timeout=15) as server:
+                                server.login(smtp_user, smtp_pass)
+                                server.send_message(msg)
+                        else:
+                            with smtplib.SMTP(smtp_server, int(smtp_port), timeout=15) as server:
+                                server.starttls()
+                                server.login(smtp_user, smtp_pass)
+                                server.send_message(msg)
+                        logger.info(f"Email sent successfully to {details['email']}.")
+                    else:
+                        logger.warning("SMTP credentials missing. Email not sent.")
+                except Exception as e:
+                    logger.error(f"SMTP Email Error: {e}")
 
                 # Save to CSV
                 try:
